@@ -1,0 +1,45 @@
+# Uncomment this line to define a global platform for your project
+# platform :ios, '9.0'
+platform :ios, '12.0'
+# CocoaPods analytics sends network stats synchronously affecting flutter build latency.
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
+project 'Runner', {
+  'Debug' => :debug,
+  'Profile' => :release,
+  'Release' => :release,
+}
+
+def parse_KV_file(file, separator='=')
+  file_abs_path = File.expand_path(file)
+  if !File.exists? file_abs_path
+    return [];
+  end
+  file_abs_path
+  return File.read(file_abs_path)
+    .split("\n")
+    .map{|line| line.strip}
+    .reject{|line| line.start_with?("#") }
+    .map{|line| line.split(separator, 2)}
+    .map{|kv| [kv.at(0), (kv.at(1) || "").strip()]}
+end
+
+flutter_application_path = File.expand_path('..', __dir__)
+flutter_root = File.expand_path('/Users/tarikalansari/Desktop/C file/flutter')
+load File.join(flutter_root, 'packages', 'flutter_tools', 'bin', 'podhelper.rb')
+
+target 'Runner' do
+  use_frameworks!
+  use_modular_headers!
+
+  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+
+  # Post-install steps
+  post_install do |installer|
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['ENABLE_BITCODE'] = 'NO'
+      end
+    end
+  end
+end
